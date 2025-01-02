@@ -12,6 +12,7 @@ def render(
     rotations: torch.Tensor,
     colors: torch.Tensor,
     opacities: torch.Tensor,
+    target_image: torch.Tensor,
     device: torch.device,
     H: int, W: int,
     sigma_factor: float = 3.0,
@@ -67,6 +68,9 @@ def render(
     grad_rotations = torch.zeros((N,), dtype=torch.float32, device=device)
     grad_colors = torch.zeros((N, 3), dtype=torch.float32, device=device)
     grad_opacities = torch.zeros((N,), dtype=torch.float32, device=device)
+    target_image = target_image.to(dtype=torch.float32, device=device)
+
+    grad_out_image = (out_image > target_image).float() * 2.0 - 1.0
 
     # Launch the backward kernel
     raster_grid = (num_tiles_x, num_tiles_y, TILE_SIZE * TILE_SIZE)
